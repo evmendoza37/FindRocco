@@ -1,4 +1,4 @@
-var mysql = require('mysql');
+var mysql = require('mysql2');
 var express = require('express');
 var bodyParser = require('body-parser');
 var path = require('path');
@@ -13,7 +13,7 @@ app.get('/', (req, res) => {
 });
 
 var db = mysql.createConnection({
-    host: "localhost",
+    host: "127.0.0.1",
     user: "emily",
     password: "evm232837",
     database: 'geo_cache'
@@ -52,6 +52,6 @@ app.post('/api/visitors', (req, res) => {
 
 
 //Start the server
-app.listen(3000, '0.0.0.0', () => {
+app.listen(PORT, '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}`);
 })

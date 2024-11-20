@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Found Rocco</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #ffffff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1, h2 {
+            margin-bottom: 20px;
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .log {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .visitor-entry {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        .visitor-entry:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Visitor Leaderboard</h1>
+        <p>Enter your name to record your visit:</p>
+        <input type="text" id="nameInput" placeholder="Your Name" />
+        <button onclick="submitName()">Submit</button>
+
+        <h2>Leaderboard:</h2>
+        <div id="visitorLog" class="log"></div>
+    </div>
+
+    <script>
+        const API_URL = "http://172.20.10.4:3000/api/visitors";
+
+        // Function to submit a name
+        async function submitName() {
+            const name = document.getElementById("nameInput").value.trim();
+            if (!name) {
+                alert("Please enter your name!");
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name }),
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                document.getElementById("nameInput").value = ""; // Clear input field
+                fetchVisitors(); // Refresh the leaderboard
+            } catch (error) {
+                console.error("Error submitting name:", error);
+                alert("An error occurred while submitting your name. Please try again.");
+            }
+        }
+
+        // Function to fetch and display visitors
+        async function fetchVisitors() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const visitors = await response.json();
+
+                const visitorLog = document.getElementById("visitorLog");
+                visitorLog.innerHTML = ""; // Clear the leaderboard
+
+                if (visitors.length === 0) {
+                    visitorLog.innerHTML = "<p>No visitors yet.</p>";
+                } else {
+                    visitors.forEach((visitor) => {
+                        const entry = document.createElement("div");
+                        entry.className = "visitor-entry";
+                        entry.textContent = `${visitor.name} - ${new Date(visitor.timestamp).toLocaleString()}`;
+                        visitorLog.appendChild(entry);
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching visitors:", error);
+                alert("An error occurred while fetching the visitor list. Please try again.");
+            }
+        }
+
+        // Fetch visitors on page load
+        fetchVisitors();
+    </script>
+</body>
+</html>

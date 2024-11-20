@@ -5,13 +5,12 @@ var path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-app.use(bodyParser.json());
+
+app.use(express.json());
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
-
-// app.listen(PORT, '0.0.0.0', () => {})
 
 var db = mysql.createConnection({
     host: "localhost",
@@ -53,6 +52,6 @@ app.post('/api/visitors', (req, res) => {
 
 
 //Start the server
-app.listen(PORT, () => {
+app.listen(3000, '0.0.0.0', () => {
     console.log(`Server is running on port ${PORT}`);
 })
